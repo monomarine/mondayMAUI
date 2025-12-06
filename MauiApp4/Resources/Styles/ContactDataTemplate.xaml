@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <DataTemplate x:Key="ContactItem">
+        <Frame
+            
+            Background="{StaticResource NSecondary}"
+            >
+
+            <Grid ColumnDefinitions="1*,2*"
+                  Margin="{StaticResource MarginS}"
+                  Padding="{StaticResource MarginS}">
+
+                <Image Grid.Column="0"
+                       Source="{Binding Icon}"
+                       MinimumHeightRequest="50"
+                       MinimumWidthRequest="50"
+                       Aspect="AspectFit"/>
+
+                <VerticalStackLayout Grid.Column="1">
+
+                    <Label Text="{Binding Name}"
+                           Background="{StaticResource NPrimary}" 
+                           FontSize="Medium"/>
+
+                    <Label Text="{Binding Phone}" FontSize="Default"/>
+                    <Label Text="{Binding Email}" FontSize="Small"/>
+
+                </VerticalStackLayout>
+
+
+            </Grid>
+            
+        </Frame>
+    </DataTemplate>
+
+    <DataTemplate x:Key="EmptyContact">
+        <Frame 
+            Background="{StaticResource NSecondary}"
+            >
+
+            <VerticalStackLayout>
+                <Label Text="Данные не загружены" FontSize="Large"
+                       HorizontalOptions="Center"/>
+                <Button Style="{StaticResource ButtonPrimary}"
+                    Text="Обновить" Command="{Binding UpdateCommand}"/>
+
+            </VerticalStackLayout>
+        </Frame>
+    </DataTemplate>
+</ResourceDictionary>

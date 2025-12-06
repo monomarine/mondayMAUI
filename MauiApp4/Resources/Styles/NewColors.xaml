@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             >
+
+    <Color x:Key="NPrimaryLight">#DC694C</Color>
+    <Color x:Key="NPrimaryDark">#a54d37</Color>
+
+    <Color x:Key="NSecondaryLight">#f4d0cc</Color>
+    <Color x:Key="NSecondaryDark">#f0d7b9</Color>
+    
+    <Color x:Key="NBackgroungLight">#ffffff</Color>
+    <Color x:Key="NbackroundDark">#272927</Color>
+
+    <SolidColorBrush x:Key="NPrimary" Color="{AppThemeBinding 
+        Light={StaticResource NPrimaryLight}, 
+        Dark={StaticResource NPrimaryDark}}"/>
+
+    <SolidColorBrush x:Key="NSecondary" Color="{AppThemeBinding 
+         Light={StaticResource NSecondaryLight}, 
+         Dark={StaticResource NSecondaryDark}}"/>
+
+    <SolidColorBrush x:Key="NBackground" Color="{AppThemeBinding 
+         Light={StaticResource NBackgroungLight}, 
+         Dark={StaticResource NbackroundDark}}"/>
+
+
+</ResourceDictionary>

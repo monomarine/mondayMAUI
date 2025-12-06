@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            >
+
+    <Color x:Key="NPrimaryLight">#DC694C</Color>
+    <Color x:Key="NPrimaryDark">DarkKhaki</Color>
+
+    <Color x:Key="NSecondaryLight">#f4d0cc</Color>
+    <Color x:Key="NSecondaryDark">#f0d7b9</Color>
+
+    <Color x:Key="NBackgroungLight">#ffffff</Color>
+    <Color x:Key="NbackroundDark">#272927</Color>
+
+    <SolidColorBrush x:Key="NPrimary" Color="{AppThemeBinding 
+        Light={StaticResource NPrimaryLight}, 
+        Dark={StaticResource NPrimaryDark}}"/>
+
+    <SolidColorBrush x:Key="NSecondary" Color="{AppThemeBinding 
+         Light={StaticResource NSecondaryLight}, 
+         Dark={StaticResource NSecondaryDark}}"/>
+
+    <SolidColorBrush x:Key="NBackground" Color="{AppThemeBinding 
+         Light={StaticResource NBackgroungLight}, 
+         Dark={StaticResource NbackroundDark}}"/>
+
+
+    <x:Double x:Key="MarginS">5</x:Double>
+    <x:Double x:Key="MarginM">10</x:Double>
+    <x:Double x:Key="MarginL">15</x:Double>
+
+    <x:Double x:Key="CornerRadS">5</x:Double>
+    <x:Double x:Key="CornerRadM">10</x:Double>
+    <x:Double x:Key="CornerRadL">15</x:Double>
+
+    <x:Double x:Key="NButtonHeight">50</x:Double>
+    <x:Double x:Key="NEntryHeihgt">40</x:Double>
+
+
+    <Style x:Key="BattonBase" TargetType="Button">
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Padding" Value="{StaticResource MarginL}"/>
+        <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="BorderWidth" Value="0"/>
+        <Setter Property="MinimumHeightRequest" Value="44"/>
+        <Setter Property="MinimumWidthRequest" Value="44"/>
+    </Style>
+
+    <Style x:Key="ButtonPrimary" TargetType="Button" BasedOn="{StaticResource BattonBase}">
+        <Setter Property="Background" Value="{StaticResource NPrimary}"/>
+        <Setter Property="TextColor" Value="{StaticResource NSecondary}"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+
+    <Style x:Key="ButtonSimple" TargetType="Button" BasedOn="{StaticResource BattonBase}">
+        <Setter Property="Background" Value="{StaticResource NSecondary}"/>
+        <Setter Property="TextColor" Value="{StaticResource NPrimary}"/>
+    </Style>
+
+
+    <Style x:Key="ButtonDisabled" TargetType="Button" BasedOn="{StaticResource ButtonSimple}">
+        <Setter Property="Opacity" Value="0.6"/>
+    </Style>
+
+
+
+</ResourceDictionary>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp4.ContactsPage"
+             xmlns:vm="clr-namespace:MauiApp4.ViewModel"
+             Title="ContactsPage">
+
+    <ContentPage.BindingContext>
+        <vm:ContactsViewModel/>
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout
+            Spacing="{StaticResource MarginM}">
+            <Label Text="СПИСОК КОНТАКТОВ" FontFamily="Vokair"
+                   HorizontalOptions="Center"/>
+
+            <CollectionView ItemsSource="{Binding Contacts}"
+                            ItemTemplate="{StaticResource ContactItem}"
+                            EmptyView="{StaticResource EmptyContact}">
+               
+            </CollectionView>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+    
+    
+</ContentPage>
