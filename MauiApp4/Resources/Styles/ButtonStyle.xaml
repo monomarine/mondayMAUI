@@ -9,8 +9,8 @@
     <Color x:Key="NSecondaryLight">#f4d0cc</Color>
     <Color x:Key="NSecondaryDark">#f0d7b9</Color>
 
-    <Color x:Key="NBackgroungLight">#ffffff</Color>
-    <Color x:Key="NbackroundDark">#272927</Color>
+    <Color x:Key="NBackgroungLight">#ffeeee</Color>
+    <Color x:Key="NbackroundDark">#212927</Color>
 
     <SolidColorBrush x:Key="NPrimary" Color="{AppThemeBinding 
         Light={StaticResource NPrimaryLight}, 
