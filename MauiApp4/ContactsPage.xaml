@@ -1,30 +1,111 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MauiApp4.ContactsPage"
              xmlns:vm="clr-namespace:MauiApp4.ViewModel"
-             >
+             xmlns:model="clr-namespace:MauiApp4.Model"
+             x:Class="MauiApp4.ContactsPage"
+             Title="Контакты">
 
     <ContentPage.BindingContext>
-        <vm:ContactsViewModel/>
+        <vm:ContactsViewModel />
     </ContentPage.BindingContext>
 
-    <ScrollView>
-        <VerticalStackLayout Margin="{StaticResource MarginL}">
+    <Grid>
+        
+        <CollectionView ItemsSource="{Binding Contacts}"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:NContact">
+                    <Frame Margin="10,5"
+                           Padding="15"
+                           CornerRadius="10"
+                           BackgroundColor="#F5F5F5">
+                        <Grid ColumnDefinitions="Auto,*,Auto"
+                              RowDefinitions="Auto,Auto">
 
-            <Label Text="СПИСОК КОНТАКТОВ" FontFamily="Vokiar"
+                            <Image Source="{Binding DisplayImage}"
+                                   WidthRequest="50"
+                                   HeightRequest="50"
+                                   Grid.RowSpan="2"
+                                   Margin="0,0,15,0"/>
+
+                        
+                            <Label Text="{Binding Name}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   Grid.Column="1"/>
+
+                        
+                            <VerticalStackLayout Grid.Column="1"
+                                                 Grid.Row="1">
+                                <Label Text="{Binding Phone}"
+                                       FontSize="14"/>
+                                <Label Text="{Binding Email}"
+                                       FontSize="14"
+                                       TextColor="Gray"/>
+                            </VerticalStackLayout>
+
+                        
+                            <Button Text="✏️"
+                                    FontSize="20"
+                                    Grid.Column="2"
+                                    Grid.RowSpan="2"
+                                    BackgroundColor="Transparent"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditContactCommand}"
+                                    CommandParameter="{Binding .}"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
+        <Grid IsVisible="{Binding IsEditModalVisible}"
+              BackgroundColor="#80000000"
+              HorizontalOptions="Fill"
+              VerticalOptions="Fill">
+
+            <Frame VerticalOptions="Center"
                    HorizontalOptions="Center"
-                   FontSize="Header"/>
+                   WidthRequest="350"
+                   Padding="20"
+                   CornerRadius="15"
+                   BackgroundColor="White">
 
-            <CollectionView ItemsSource="{Binding Contacts}"
-                            ItemTemplate="{StaticResource ContactItem}"
-                            EmptyView="{StaticResource EmptyContact}"
-                            SelectedItem="{Binding SelectedContact}">
-               
-            </CollectionView>
-            
-        </VerticalStackLayout>
-    </ScrollView>
-    
-    
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Редактирование контакта"
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+
+                    <Entry Placeholder="Имя"
+                           Text="{Binding SelectedContact.Name}"/>
+
+                    <Entry Placeholder="Телефон"
+                           Text="{Binding SelectedContact.Phone}"
+                           Keyboard="Telephone"/>
+
+                    <Entry Placeholder="Email"
+                           Text="{Binding SelectedContact.Email}"
+                           Keyboard="Email"/>
+
+           
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Сохранить"
+                                BackgroundColor="#4CAF50"
+                                TextColor="White"
+                                Command="{Binding SaveContactCommand}"
+                                WidthRequest="120"/>
+
+                        <Button Text="Отмена"
+                                BackgroundColor="#F44336"
+                                TextColor="White"
+                                Command="{Binding CancelEditCommand}"
+                                WidthRequest="120"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+    </Grid>
 </ContentPage>

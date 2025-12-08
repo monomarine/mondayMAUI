@@ -1,4 +1,5 @@
-﻿using MauiApp4.ViewModel;
+﻿
+using MauiApp4.ViewModel;
 using Microsoft.Extensions.Logging;
 
 namespace MauiApp4
@@ -18,7 +19,7 @@ namespace MauiApp4
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             RegisterPagesAndVM(builder.Services);
@@ -28,7 +29,7 @@ namespace MauiApp4
         private static void RegisterPagesAndVM(IServiceCollection service)
         {
             service.AddTransient<ContactsPage>();
-            service.AddTransient<ContactsViewModel>();
+            service.AddSingleton<ContactsViewModel>(); 
         }
     }
 }
