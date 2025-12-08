@@ -6,23 +6,19 @@ using System.Threading.Tasks;
 
 namespace MauiApp4.Model
 {
-    class NContact
+    public class NContact
     {
-        public string Icon { get; set; }
         public string Name { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
+        public string Icon { get; set; }
 
-        public string DisplayImage =>
-            !string.IsNullOrEmpty(Icon) ? Icon : "user.png";
-
-        public NContact(string name, string phone, string email, string image = null)
+        public NContact(string name, string phone, string email, string icon = null)
         {
             Name = name;
             Phone = phone;
             Email = email;
-            Icon = image;
-
+            Icon = icon;
         }
     }
 }
