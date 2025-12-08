@@ -20,14 +20,21 @@
 
                 <VerticalStackLayout Grid.Column="1">
 
-                    <Label Text="{Binding Name}"
-                           FontSize="Medium"/>
-
+                    <Label Text="{Binding Name}" FontSize="Medium"/>
                     <Label Text="{Binding Phone}" FontSize="Default"/>
                     <Label Text="{Binding Email}" FontSize="Small"/>
 
                 </VerticalStackLayout>
-
+                
+                <Button Text="Изм"
+                        Background="{StaticResource NPrimary}"
+                        TextColor="White"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                        Path=BindingContext.EditContactCommand}"
+                        CommandParameter="{Binding}"
+                        Grid.Column="2"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center" />
 
             </Grid>
             

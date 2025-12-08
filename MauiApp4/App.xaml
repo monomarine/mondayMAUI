@@ -9,9 +9,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="/Resources/Styles/Styles.xaml" />
+                <ResourceDictionary Source="/Resources/Styles/NewColors.xaml" />
                 <ResourceDictionary Source="/Resources/Styles/ContactDataTemplate.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/ButtonStyle.xaml"/>
-
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
