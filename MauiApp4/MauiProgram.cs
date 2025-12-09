@@ -1,11 +1,14 @@
 ﻿using MauiApp4.Services;
 using MauiApp4.ViewModel;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace MauiApp4
 {
     public static class MauiProgram
     {
+        public static IServiceProvider Services { get; private set; }
+
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
@@ -19,18 +22,22 @@ namespace MauiApp4
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
-            RegisterPagesAndVM(builder.Services);
-            return builder.Build();
+            RegisterServices(builder.Services);
+
+            var app = builder.Build();
+            Services = app.Services;
+
+            return app;
         }
 
-        private static void RegisterPagesAndVM(IServiceCollection service)
+        private static void RegisterServices(IServiceCollection services)
         {
-            service.AddTransient<ContactsPage>();
-            service.AddTransient<IApiService, ApiService>();
-            service.AddTransient<ContactsViewModel>();
+            services.AddSingleton<IApiService, ApiService>();
+            services.AddTransient<ContactsViewModel>();
+            services.AddTransient<ContactsPage>();
         }
     }
 }

@@ -4,7 +4,8 @@
              x:Class="MauiApp4.ContactsPage"
              xmlns:vm="clr-namespace:MauiApp4.ViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             >
+             Title="Контакты"
+>
 
     <ContentPage.BindingContext>
         <vm:ContactsViewModel/>
@@ -12,93 +13,244 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-     
+        
+            <DataTemplate x:Key="ContactItem">
+                <Grid Padding="10" ColumnDefinitions="Auto, *, Auto">
+                  
+                    <Frame Grid.Column="0" 
+                           HeightRequest="50" 
+                           WidthRequest="50" 
+                           CornerRadius="25"
+                           BackgroundColor="#2196F3"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center">
+                        <Label Text="{Binding FirstName, StringFormat='{0}'}" 
+                               FontSize="16"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               TextColor="Black"/>
+                    </Frame>
+
+                
+                    <VerticalStackLayout Grid.Column="1" Padding="10,0">
+                        <Label Text="{Binding FullName}" 
+                               FontSize="16" 
+                               FontAttributes="Bold"
+                               TextColor="Black"/> 
+                        <Label Text="{Binding Phone}" 
+                               FontSize="14"
+                               TextColor="#333333"/> 
+                        <Label Text="{Binding Email}" 
+                               FontSize="12"
+                               TextColor="Black"/> 
+                    </VerticalStackLayout>
+
+                   
+                    <HorizontalStackLayout Grid.Column="2" 
+                                           Spacing="10"
+                                           VerticalOptions="Center">
+                        <Button Text="✏️" 
+                                FontSize="16"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ContactsViewModel}}, Path=EditContactCommand}"
+                                CommandParameter="{Binding}"
+                                BackgroundColor="Transparent"
+                                TextColor="#2196F3"/>
+                        <Button Text="🗑️" 
+                                FontSize="16"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ContactsViewModel}}, Path=DeleteContactCommand}"
+                                CommandParameter="{Binding}"
+                                BackgroundColor="Transparent"
+                                TextColor="#F44336"/>
+                    </HorizontalStackLayout>
+                </Grid>
+            </DataTemplate>
+
+            
+            <ContentView x:Key="EmptyContact">
+                <VerticalStackLayout HorizontalOptions="Center" 
+                                     VerticalOptions="Center"
+                                     Spacing="20">
+                    <Label Text="Нет контактов"
+                           FontSize="18"
+                           HorizontalOptions="Center"
+                           TextColor="Black"/> 
+                    <Button Text="Добавить первый контакт"
+                            Command="{Binding AddContactCommand}"
+                            HorizontalOptions="Center"
+                            BackgroundColor="#2196F3"
+                            TextColor="White"
+                            Padding="20,10"/>
+                </VerticalStackLayout>
+            </ContentView>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid>
+    <Grid BackgroundColor="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <ScrollView>
-            <VerticalStackLayout Margin="{StaticResource MarginL}">
+       
+        <Grid Grid.Row="0" Padding="10" ColumnDefinitions="*, Auto, Auto, Auto"
+              BackgroundColor="White">
+            <SearchBar Grid.Column="0" 
+                       Placeholder="Поиск контактов..."
+                       Text="{Binding SearchText}"
+                       PlaceholderColor="Gray"
+                       TextColor="Black"/> 
 
-                <Label Text="СПИСОК КОНТАКТОВ" FontFamily="Vokiar"
-                   HorizontalOptions="Center"
-                   FontSize="Header"/>
+            <Button Grid.Column="1" 
+                    Text="🔍"
+                    Command="{Binding SearchContactCommand}"
+                    BackgroundColor="Transparent"
+                    Margin="5,0"
+                    TextColor="#2196F3"/>
 
-                <CollectionView ItemsSource="{Binding Contacts}"
+            <Button Grid.Column="2" 
+                    Text="🔄"
+                    Command="{Binding RefreshContactsCommand}"
+                    BackgroundColor="Transparent"
+                    Margin="5,0"
+                    TextColor="#2196F3"/>
+
+            <Button Grid.Column="3" 
+                    Text="➕"
+                    Command="{Binding AddContactCommand}"
+                    BackgroundColor="Transparent"
+                    Margin="5,0"
+                    TextColor="#2196F3"/>
+        </Grid>
+
+     
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefreshContactsCommand}"
+                     BackgroundColor="White">
+            <CollectionView ItemsSource="{Binding Contacts}"
                             ItemTemplate="{StaticResource ContactItem}"
                             EmptyView="{StaticResource EmptyContact}"
-                            SelectedItem="{Binding SelectedContact}"
-                            
-                            >
+                            SelectionMode="None"
+                            BackgroundColor="White">
+            </CollectionView>
+        </RefreshView>
 
-                </CollectionView>
-
-            </VerticalStackLayout>
-
-
-        </ScrollView>
-
-
-        <!-- Модальное окно -->
+    
         <Border x:Name="ModalOverlay"
-        IsVisible="{Binding IsModalVisible}"
-        Background="{AppThemeBinding Light={StaticResource NPrimaryLight}, Dark={StaticResource NPrimaryDark}}"
-        HorizontalOptions="Fill"
-        VerticalOptions="Fill">
+                Grid.RowSpan="2"
+                IsVisible="{Binding IsModalVisible}"
+                Background="#80000000"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                Padding="20">
 
-            <VerticalStackLayout HorizontalOptions="Center" 
-                         VerticalOptions="Center"
-                         WidthRequest="300">
+            <Frame HorizontalOptions="Center" 
+                   VerticalOptions="Center"
+                   Padding="20"
+                   BackgroundColor="White"
+                   CornerRadius="10"
+                   WidthRequest="350">
 
-                <Label Text="Редактировать контакт" 
-               FontSize="Large"
-               HorizontalOptions="Center"
-               FontAttributes="Bold"/>
+                <VerticalStackLayout Spacing="15">
+                   
+                    <Label Text="{Binding ModalTitle}" 
+                           FontSize="20"
+                           HorizontalOptions="Center"
+                           FontAttributes="Bold"
+                           TextColor="#2196F3"/>
 
-                <VerticalStackLayout>
-                    <Label Text="Имя:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.FirstName}"/>
+                    
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Имя:" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="Black"/>
+                        <Entry Text="{Binding EditingContact.FirstName}"
+                               Placeholder="Введите имя"
+                               FontSize="14"
+                               TextColor="Black"
+                               PlaceholderColor="Gray"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Фамилия:" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="Black"/>
+                        <Entry Text="{Binding EditingContact.LastName}"
+                               Placeholder="Введите фамилию"
+                               FontSize="14"
+                               TextColor="Black"
+                               PlaceholderColor="Gray"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Телефон:" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="Black"/>
+                        <Entry Text="{Binding EditingContact.Phone}"
+                               Placeholder="+7 (999) 123-45-67"
+                               Keyboard="Telephone"
+                               FontSize="14"
+                               TextColor="Black"
+                               PlaceholderColor="Gray"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Email:" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="Black"/>
+                        <Entry Text="{Binding EditingContact.Email}"
+                               Placeholder="example@email.com"
+                               Keyboard="Email"
+                               FontSize="14"
+                               TextColor="Black"
+                               PlaceholderColor="Gray"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Адрес:" 
+                               FontSize="14" 
+                               FontAttributes="Bold"
+                               TextColor="Black"/>
+                        <Entry Text="{Binding EditingContact.Address}"
+                               Placeholder="Введите адрес"
+                               FontSize="14"
+                               TextColor="Black"
+                               PlaceholderColor="Gray"/>
+                    </VerticalStackLayout>
+
+             
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0" 
+                                Text="Отмена" 
+                                Command="{Binding CloseModalCommand}"
+                                BackgroundColor="#F5F5F5"
+                                TextColor="#333"
+                                FontSize="14"
+                                Padding="10"/>
+
+                        <Button Grid.Column="1" 
+                                Text="Сохранить" 
+                                Command="{Binding SaveContactCommand}"
+                                BackgroundColor="#2196F3"
+                                TextColor="White"
+                                FontSize="14"
+                                Padding="10"/>
+                    </Grid>
                 </VerticalStackLayout>
-
-                <VerticalStackLayout>
-                    <Label Text="Имя:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.LastName}"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Телефон:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.Phone}"
-                    Keyboard="Telephone"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Email:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.Email}"
-                   Keyboard="Email"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Email:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.Address}"/>
-                </VerticalStackLayout>
-
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                    <Button Grid.Column="0" 
-                    Text="Отмена" 
-                    Style="{StaticResource ButtonSimple}"
-                    Command="{Binding CloseModalCommand}"/>
-
-                    <Button Grid.Column="1" 
-                    Text="Сохранить" 
-                    Style="{StaticResource ButtonPrimary}"
-                    Command="{Binding SaveContactCommand}"/>
-                </Grid>
-
-            </VerticalStackLayout>
-
+            </Frame>
         </Border>
+
+
+        <ActivityIndicator Grid.RowSpan="2"
+                           IsVisible="{Binding IsBusy}"
+                           IsRunning="{Binding IsBusy}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           Color="#2196F3"
+                           Scale="2"/>
     </Grid>
-
-
 </ContentPage>
