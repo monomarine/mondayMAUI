@@ -12,32 +12,56 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-     
+            <VerticalStackLayout x:Key="EmptyContact"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center">
+                <Label Text="Контакты отсутствуют"
+                   FontSize="16"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"/>
+            </VerticalStackLayout>
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid>
+        <VerticalStackLayout Margin="{StaticResource MarginL}">
 
-        <ScrollView>
-            <VerticalStackLayout Margin="{StaticResource MarginL}">
+            <Label Text="СПИСОК КОНТАКТОВ"
+               FontFamily="Vokiar"
+               HorizontalOptions="Center"
+               FontSize="Header"/>
+            
+            <CollectionView ItemsSource="{Binding Contacts}"
+                        EmptyView="{StaticResource EmptyContact}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedContact}">
 
-                <Label Text="СПИСОК КОНТАКТОВ" FontFamily="Vokiar"
-                   HorizontalOptions="Center"
-                   FontSize="Header"/>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="Gray"
+                           CornerRadius="5"
+                           Padding="10"
+                           Margin="5">
 
-                <CollectionView ItemsSource="{Binding Contacts}"
-                            ItemTemplate="{StaticResource ContactItem}"
-                            EmptyView="{StaticResource EmptyContact}"
-                            SelectedItem="{Binding SelectedContact}"
-                            
-                            >
+                            <VerticalStackLayout>
+                                <Label Text="{Binding FullName}"
+                                       TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                       FontSize="16"
+                                       FontAttributes="Bold"/>
 
-                </CollectionView>
-
-            </VerticalStackLayout>
+                                <Label Text="{Binding Phone}"
+                                       TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}"/>
 
 
-        </ScrollView>
+                            </VerticalStackLayout>
+
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+
+            </CollectionView>
+
+        </VerticalStackLayout>
 
 
         <!-- Модальное окно -->
@@ -62,7 +86,7 @@
                 </VerticalStackLayout>
 
                 <VerticalStackLayout>
-                    <Label Text="Имя:" FontSize="Small"/>
+                    <Label Text="Фамилия:" FontSize="Small"/>
                     <Entry Text="{Binding EditingContact.LastName}"/>
                 </VerticalStackLayout>
 
@@ -76,11 +100,6 @@
                     <Label Text="Email:" FontSize="Small"/>
                     <Entry Text="{Binding EditingContact.Email}"
                    Keyboard="Email"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Email:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.Address}"/>
                 </VerticalStackLayout>
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
