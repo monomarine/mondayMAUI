@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             >
 
-    <Color x:Key="NPrimaryLight">#DC694C</Color>
-    <Color x:Key="NPrimaryDark">DarkKhaki</Color>
+    <Color x:Key="NPrimaryLight">#e272f3</Color>
+    <Color x:Key="NPrimaryDark">#b45ac2</Color>
 
-    <Color x:Key="NSecondaryLight">#f4d0cc</Color>
-    <Color x:Key="NSecondaryDark">#f0d7b9</Color>
-
+    <Color x:Key="NSecondaryLight">#f8e6fc</Color>
+    <Color x:Key="NSecondaryDark">#f0d7f4</Color>
+    
     <Color x:Key="NBackgroungLight">#ffffff</Color>
-    <Color x:Key="NbackroundDark">#272927</Color>
+    <Color x:Key="NbackroundDark">#162352</Color>
 
     <SolidColorBrush x:Key="NPrimary" Color="{AppThemeBinding 
         Light={StaticResource NPrimaryLight}, 

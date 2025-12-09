@@ -31,26 +31,31 @@ namespace MauiApp4.ViewModel
         private ContactDto _editingContact;
         [ObservableProperty]
         private bool _isBusy;
+        [ObservableProperty]
+        private bool _isNewContact;
 
 
-        public ContactsViewModel(IApiService apiserv)
+        public ContactsViewModel()
         {
-            _apiService = apiserv;
+            _apiService = new ApiService();
+            LoadContactsCommand.ExecuteAsync(null);
         }
 
-        public ContactsViewModel() { }
-
+        [RelayCommand]
         private async Task LoadContacts()
         {
             try
             {
                 IsBusy = true;
-                // var contacts = ; извлеките данные через сервис API
+                var contacts = await _apiService.GetContactsAsync();
 
                 Contacts.Clear();
-                //добавьте загруженные контакты в Contacts
+                foreach (var contact in contacts)
+                {
+                    Contacts.Add(contact);
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await Application.Current.MainPage.DisplayAlert("Ошибка",
                     $"ошибка загрузки данных {ex.Message}", "OK");
@@ -60,34 +65,175 @@ namespace MauiApp4.ViewModel
                 IsBusy = false;
             }
         }
+
         [RelayCommand]
         private void AddContact()
         {
-            //реализуйте функционал добавления нового контакта через модальное окно
+            try
+            {
+                IsNewContact = true;
+                EditingContact = new ContactDto();
+                IsModalVisible = true;
+            }
+            catch (Exception ex)
+            {
+                Application.Current?.MainPage?.DisplayAlert("Ошибка",
+                    $"Ошибка: {ex.Message}", "OK");
+            }
         }
+
         [RelayCommand]
         private void EditContact(ContactDto contact)
         {
-            //реализуйте функционал одновления контакта
+            try
+            {
+                if (contact == null) return;
+
+                IsNewContact = false;
+                EditingContact = new ContactDto
+                {
+                    Id = contact.Id,
+                    FirstName = contact.FirstName,
+                    LastName = contact.LastName,
+                    Phone = contact.Phone,
+                    Email = contact.Email,
+                    Address = contact.Address
+                };
+                IsModalVisible = true;
+            }
+            catch (Exception ex)
+            {
+                Application.Current?.MainPage?.DisplayAlert("Ошибка",
+                    $"Ошибка: {ex.Message}", "OK");
+            }
         }
+
         [RelayCommand]
-        private void DeleteContact(ContactDto contact)
+        private async Task SaveContact()
         {
-            //реализуйте удаление выбранного контакта. можно через кнопку в collectionview Или пойти более сложным путем и реализовать удаление свайпом. тут понадобиться отслеживать события ввода и работа с Behaviuours
+            try
+            {
+                if (string.IsNullOrWhiteSpace(EditingContact?.FirstName) || 
+                    string.IsNullOrWhiteSpace(EditingContact?.LastName))
+                {
+                    await Application.Current?.MainPage?.DisplayAlert("Ошибка",
+                        "Заполните имя и фамилию", "OK");
+                    return;
+                }
+
+                IsBusy = true;
+
+                if (IsNewContact)
+                {
+                    var newContact = new CreateContactDto
+                    {
+                        FirstName = EditingContact.FirstName,
+                        LastName = EditingContact.LastName,
+                        Phone = EditingContact.Phone,
+                        Email = EditingContact.Email,
+                        Address = EditingContact.Address
+                    };
+
+                    var createdContact = await _apiService.CreateContactAsync(newContact);
+                    Contacts.Add(createdContact);
+                }
+                else
+                {
+                    var updateContact = new UpdateContactDto
+                    {
+                        FirstName = EditingContact.FirstName,
+                        LastName = EditingContact.LastName,
+                        Phone = EditingContact.Phone,
+                        Email = EditingContact.Email,
+                        Address = EditingContact.Address
+                    };
+
+                    await _apiService.UpdateContactAsync(EditingContact.Id, updateContact);
+                    
+                    var existingContact = Contacts.FirstOrDefault(c => c.Id == EditingContact.Id);
+                    if (existingContact != null)
+                    {
+                        var index = Contacts.IndexOf(existingContact);
+                        Contacts.RemoveAt(index);
+                        Contacts.Insert(index, new ContactDto
+                        {
+                            Id = EditingContact.Id,
+                            FirstName = EditingContact.FirstName,
+                            LastName = EditingContact.LastName,
+                            Phone = EditingContact.Phone,
+                            Email = EditingContact.Email,
+                            Address = EditingContact.Address
+                        });
+                    }
+                }
+
+                CloseModal();
+            }
+            catch (Exception ex)
+            {
+                await Application.Current?.MainPage?.DisplayAlert("Ошибка",
+                    $"Ошибка сохранения: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
+
+        [RelayCommand]
+        private async Task DeleteContact(ContactDto contact)
+        {
+            try
+            {
+                if (contact == null) return;
+
+                bool confirm = await Application.Current?.MainPage?.DisplayAlert(
+                    "Подтверждение",
+                    $"Удалить контакт {contact.FullName}?",
+                    "Удалить",
+                    "Отмена");
+
+                if (confirm)
+                {
+                    IsBusy = true;
+                    await _apiService.DeleteContactAsync(contact.Id);
+                    Contacts.Remove(contact);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Application.Current?.MainPage?.DisplayAlert("Ошибка",
+                    $"Ошибка удаления: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         [RelayCommand]
         private async Task RefreshContacts()
         {
-            IsRefreshing = true;
-            var contacts = await _apiService.GetContactsAsync(SearchText);
+            try
+            {
+                IsRefreshing = true;
+                var contacts = await _apiService.GetContactsAsync();
 
-            //одновление основного списка контактов на основе полученного из сервиса
-            //не забудьте про обработку исключений
-        }
-        
-        private void SearchContact()
-        {
-            //реализуйте поиск контакта / контактов по строке поиска
+                Contacts.Clear();
+                foreach (var contact in contacts)
+                {
+                    Contacts.Add(contact);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Application.Current?.MainPage?.DisplayAlert("Ошибка",
+                    $"Ошибка обновления: {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsRefreshing = false;
+            }
         }
 
         [RelayCommand]
@@ -95,6 +241,7 @@ namespace MauiApp4.ViewModel
         {
             IsModalVisible = false;
             EditingContact = null;
+            IsNewContact = false;
         }
 
     }

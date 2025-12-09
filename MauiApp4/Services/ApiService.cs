@@ -11,7 +11,7 @@ namespace MauiApp4.Services
     internal class ApiService : IApiService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "https://localhost:7190/api/Contacts"; //-----  проверьте свои адреса API
+        private readonly string _baseUrl = "http://127.0.0.1:5289/api/Contacts"; //-----  проверьте свои адреса API
 
         public ApiService()
         {

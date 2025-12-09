@@ -43,7 +43,7 @@
         <!-- Модальное окно -->
         <Border x:Name="ModalOverlay"
         IsVisible="{Binding IsModalVisible}"
-        Background="{AppThemeBinding Light={StaticResource NPrimaryLight}, Dark={StaticResource NPrimaryDark}}"
+        Background="{AppThemeBinding Light={StaticResource NBackgroungLight}, Dark={StaticResource NbackroundDark}}"
         HorizontalOptions="Fill"
         VerticalOptions="Fill">
 
@@ -54,7 +54,8 @@
                 <Label Text="Редактировать контакт" 
                FontSize="Large"
                HorizontalOptions="Center"
-               FontAttributes="Bold"/>
+               FontAttributes="Bold"
+               Margin="0,0,0,35"/>
 
                 <VerticalStackLayout>
                     <Label Text="Имя:" FontSize="Small"/>
@@ -62,7 +63,7 @@
                 </VerticalStackLayout>
 
                 <VerticalStackLayout>
-                    <Label Text="Имя:" FontSize="Small"/>
+                    <Label Text="Фамилия:" FontSize="Small"/>
                     <Entry Text="{Binding EditingContact.LastName}"/>
                 </VerticalStackLayout>
 
@@ -79,11 +80,11 @@
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Email:" FontSize="Small"/>
+                    <Label Text="Адрес:" FontSize="Small"/>
                     <Entry Text="{Binding EditingContact.Address}"/>
                 </VerticalStackLayout>
 
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10" Margin="0,20,0,0">
                     <Button Grid.Column="0" 
                     Text="Отмена" 
                     Style="{StaticResource ButtonSimple}"

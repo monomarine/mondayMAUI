@@ -4,7 +4,7 @@
 
     <DataTemplate x:Key="ContactItem">
         <Frame 
-            Background="{StaticResource NSecondary}"
+            Background="{StaticResource NBackground}"
             
             >
 
@@ -14,8 +14,9 @@
                 <Image Grid.Column="0"
                        Source="{Binding DisplayImage}"
                        Aspect="AspectFit"
-                       HeightRequest="100"
-                       WidthRequest="100"
+                       HeightRequest="60"
+                       WidthRequest="60"
+                       Margin="0,0,25,0"
                      />
 
                 <VerticalStackLayout Grid.Column="1">
@@ -23,24 +24,35 @@
                     <Label Text="{Binding FullName}"
                            FontSize="Medium"/>
 
-                    <Label Text="{Binding Phone}" FontSize="Default"/>
-                    <Label Text="{Binding Email}" FontSize="Small"/>
+                    <Label Text="{Binding Phone}" FontSize="Default" Margin="0,5,0,0"/>
+                    <Label Text="{Binding Email}" FontSize="10" Margin="0,5,0,5"/>
                     <Label Text="{Binding Address}" FontSize="Micro"/>
 
                 </VerticalStackLayout>
 
 
                 <VerticalStackLayout Grid.Column="2">
-                    <Button Text="изм" 
-                          Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, 
-                              Path=BindingContext.EditContactCommand}"
-                          CommandParameter="{Binding}"
-                         />
-
-                    <Button Text="удалить"
+                    <Button Text="✎" 
+                            CornerRadius="10"
+                            Background="{StaticResource NPrimary}"
+                            TextColor="White"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
-                                Path=BindingContext.DeleteContactCommand}"
-                            CommandParameter="{Binding}"/>
+                        Path=BindingContext.EditContactCommand}"
+                            CommandParameter="{Binding}"
+                            Margin="{StaticResource MarginM}"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center" />
+
+                    <Button Text="⌫"
+                            CornerRadius="10"
+                            Background="{StaticResource NPrimary}"
+                            TextColor="White"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                            Path=BindingContext.DeleteContactCommand}"
+                            CommandParameter="{Binding}"
+                            Margin="{StaticResource MarginM}"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center" />
                 </VerticalStackLayout>
                
 
@@ -52,7 +64,7 @@
 
     <DataTemplate x:Key="EmptyContact">
         <Frame 
-            Background="{StaticResource NSecondary}"
+            Background="{StaticResource NBackground}"
             >
 
             <VerticalStackLayout>
