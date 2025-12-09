@@ -20,19 +20,29 @@
 
                 <VerticalStackLayout Grid.Column="1">
 
-                    <Label Text="{Binding Name}"
+                    <Label Text="{Binding FullName}"
                            FontSize="Medium"/>
 
                     <Label Text="{Binding Phone}" FontSize="Default"/>
                     <Label Text="{Binding Email}" FontSize="Small"/>
+                    <Label Text="{Binding Address}" FontSize="Micro"/>
 
                 </VerticalStackLayout>
 
-                <Button Text="изм" 
-                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, 
-                             Path=BindingContext.EditContactCommand}"
-                         CommandParameter="{Binding}"
-                        Grid.Column="2"/>
+
+                <VerticalStackLayout Grid.Column="2">
+                    <Button Text="изм" 
+                          Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, 
+                              Path=BindingContext.EditContactCommand}"
+                          CommandParameter="{Binding}"
+                         />
+
+                    <Button Text="удалить"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}},
+                                Path=BindingContext.DeleteContactCommand}"
+                            CommandParameter="{Binding}"/>
+                </VerticalStackLayout>
+               
 
 
             </Grid>

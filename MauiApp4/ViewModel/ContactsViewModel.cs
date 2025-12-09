@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MauiApp4.DTO;
 using MauiApp4.Model;
+using MauiApp4.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,73 +12,82 @@ using System.Threading.Tasks;
 
 namespace MauiApp4.ViewModel
 {
+#pragma warning disable
     partial class ContactsViewModel : ObservableObject
     {
-        [ObservableProperty]
-        private ObservableCollection<NContact> _contacts = new ObservableCollection<NContact>();
+        private readonly IApiService _apiService;
 
         [ObservableProperty]
-        private NContact _selectedContact;
-
-        public ContactsViewModel()
-         {
-            Contacts.Add(new NContact("Иванов иван иванович", "+7 549 463 85 12", "ivanov@gmail.com"));
-            Contacts.Add(new NContact("Петров Сергей иванович", "+7 549 123 12 85", "petrov@gmail.com"));
-            Contacts.Add(new NContact("Федоров максим Анатольевич", "+7 549 643 12 75", "fedorov@gmail.com"));
-            Contacts.Add(new NContact("Боженов Даниил Петрович", "+7 549 346 12 54", "bojenov@gmail.com"));
-        }
-
-
-        [RelayCommand]
-        private void Update()
-        {
-            Contacts.Clear();
-
-            Contacts.Add(new NContact("Иванов иван иванович", "+7 549 463 85 12", "ivanov@gmail.com"));
-            Contacts.Add(new NContact("Петров Сергей иванович", "+7 549 123 12 85", "petrov@gmail.com"));
-            Contacts.Add(new NContact("Федоров максим Анатольевич", "+7 549 643 12 75", "fedorov@gmail.com"));
-            Contacts.Add(new NContact("Боженов Даниил Петрович", "+7 549 346 12 54", "bojenov@gmail.com"));
-
-
-        }
-
+        private ObservableCollection<ContactDto> _contacts = new ObservableCollection<ContactDto>();
+        [ObservableProperty]
+        private ContactDto _selectedContact;
+        [ObservableProperty]
+        private string _searchText;
+        [ObservableProperty]
+        private bool _isRefreshing;
         [ObservableProperty]
         private bool _isModalVisible;
         [ObservableProperty]
-        private NContact _editingContact;
+        private ContactDto _editingContact;
+        [ObservableProperty]
+        private bool _isBusy;
 
-        [RelayCommand]
-        private void EditContact(NContact contact)
+
+        public ContactsViewModel(IApiService apiserv)
         {
-            if(contact is not null)
-            {
-                EditingContact = new NContact(contact.Name,
-                    contact.Phone,
-                    contact.Email,
-                    contact.Icon);
-
-                IsModalVisible = true;
-            }
+            _apiService = apiserv;
         }
 
-        [RelayCommand]
-        private void SaveContact()
+        public ContactsViewModel() { }
+
+        private async Task LoadContacts()
         {
-            if(EditingContact != null && SelectedContact !=null)
+            try
             {
-                var index = Contacts.IndexOf(SelectedContact);
-                if(index >= 0)
-                {
-                    Contacts[index] = new NContact
-                        (
-                            EditingContact.Name,
-                            EditingContact.Phone,
-                            EditingContact.Email,
-                            EditingContact.Icon
-                        );
-                }
-                CloseModal();
+                IsBusy = true;
+                // var contacts = ; извлеките данные через сервис API
+
+                Contacts.Clear();
+                //добавьте загруженные контакты в Contacts
             }
+            catch(Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Ошибка",
+                    $"ошибка загрузки данных {ex.Message}", "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+        [RelayCommand]
+        private void AddContact()
+        {
+            //реализуйте функционал добавления нового контакта через модальное окно
+        }
+        [RelayCommand]
+        private void EditContact(ContactDto contact)
+        {
+            //реализуйте функционал одновления контакта
+        }
+        [RelayCommand]
+        private void DeleteContact(ContactDto contact)
+        {
+            //реализуйте удаление выбранного контакта. можно через кнопку в collectionview Или пойти более сложным путем и реализовать удаление свайпом. тут понадобиться отслеживать события ввода и работа с Behaviuours
+        }
+        [RelayCommand]
+        private async Task RefreshContacts()
+        {
+            IsRefreshing = true;
+            var contacts = await _apiService.GetContactsAsync(SearchText);
+
+            //одновление основного списка контактов на основе полученного из сервиса
+            //не забудьте про обработку исключений
+        }
+        
+        private void SearchContact()
+        {
+            //реализуйте поиск контакта / контактов по строке поиска
         }
 
         [RelayCommand]

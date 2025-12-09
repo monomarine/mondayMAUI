@@ -58,7 +58,12 @@
 
                 <VerticalStackLayout>
                     <Label Text="Имя:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.Name}"/>
+                    <Entry Text="{Binding EditingContact.FirstName}"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout>
+                    <Label Text="Имя:" FontSize="Small"/>
+                    <Entry Text="{Binding EditingContact.LastName}"/>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="5">
@@ -71,6 +76,11 @@
                     <Label Text="Email:" FontSize="Small"/>
                     <Entry Text="{Binding EditingContact.Email}"
                    Keyboard="Email"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Email:" FontSize="Small"/>
+                    <Entry Text="{Binding EditingContact.Address}"/>
                 </VerticalStackLayout>
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
