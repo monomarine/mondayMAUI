@@ -6,88 +6,115 @@ using MauiApp4.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MauiApp4.ViewModel
 {
-#pragma warning disable
-    partial class ContactsViewModel : ObservableObject
+    public partial class ContactsViewModel : ObservableObject
     {
         private readonly IApiService _apiService;
+        public ObservableCollection<ContactDto> Contacts { get; set; } = new ObservableCollection<ContactDto>();
 
+        public ContactsViewModel()
+        {
+            _apiService = new ApiService();
+            Task.Run(LoadContactsAsync);
+        }
+
+        #region Observable Properties (Свойства)
         [ObservableProperty]
-        private ObservableCollection<ContactDto> _contacts = new ObservableCollection<ContactDto>();
-        [ObservableProperty]
-        private ContactDto _selectedContact;
-        [ObservableProperty]
-        private string _searchText;
-        [ObservableProperty]
-        private bool _isRefreshing;
-        [ObservableProperty]
-        private bool _isModalVisible;
+        private bool _isBusy;
         [ObservableProperty]
         private ContactDto _editingContact;
         [ObservableProperty]
-        private bool _isBusy;
+        private bool _isModalVisible;
+        [ObservableProperty]
+        private ContactDto _selectedContact;
 
-
-        public ContactsViewModel(IApiService apiserv)
+        partial void OnSelectedContactChanged(ContactDto value)
         {
-            _apiService = apiserv;
+            if (value != null)
+            {
+                OpenEditModal(value);
+                _selectedContact = null;
+            }
         }
 
-        public ContactsViewModel() { }
+        #endregion
 
-        private async Task LoadContacts()
+        #region Relay Commands (Команды)
+        [RelayCommand]
+        private async Task LoadContactsAsync()
         {
+            if (IsBusy) return;
+
             try
             {
                 IsBusy = true;
-                // var contacts = ; извлеките данные через сервис API
-
-                Contacts.Clear();
-                //добавьте загруженные контакты в Contacts
+                var contactsList = await _apiService.GetContactsAsync();
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    Contacts.Clear();
+                    foreach (var contact in contactsList)
+                    {
+                        Contacts.Add(contact);
+                    }
+                });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Ошибка",
-                    $"ошибка загрузки данных {ex.Message}", "OK");
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    if (Application.Current?.MainPage != null)
+                        await Application.Current.MainPage.DisplayAlert("Ошибка", $"Не удалось загрузить контакты: {ex.Message}", "OK");
+                });
             }
             finally
             {
                 IsBusy = false;
             }
         }
-        [RelayCommand]
-        private void AddContact()
-        {
-            //реализуйте функционал добавления нового контакта через модальное окно
-        }
-        [RelayCommand]
-        private void EditContact(ContactDto contact)
-        {
-            //реализуйте функционал одновления контакта
-        }
-        [RelayCommand]
-        private void DeleteContact(ContactDto contact)
-        {
-            //реализуйте удаление выбранного контакта. можно через кнопку в collectionview Или пойти более сложным путем и реализовать удаление свайпом. тут понадобиться отслеживать события ввода и работа с Behaviuours
-        }
-        [RelayCommand]
-        private async Task RefreshContacts()
-        {
-            IsRefreshing = true;
-            var contacts = await _apiService.GetContactsAsync(SearchText);
 
-            //одновление основного списка контактов на основе полученного из сервиса
-            //не забудьте про обработку исключений
-        }
-        
-        private void SearchContact()
+        [RelayCommand]
+        private async Task SaveContactAsync()
         {
-            //реализуйте поиск контакта / контактов по строке поиска
+            if (EditingContact == null) return;
+
+            try
+            {
+                IsBusy = true;
+
+                var updateDto = new UpdateContactDto
+                {
+                    FirstName = EditingContact.FirstName,
+                    LastName = EditingContact.LastName,
+                    Phone = EditingContact.Phone,
+                    Email = EditingContact.Email,
+                    Address = EditingContact.Address
+                };
+
+                await _apiService.UpdateContactAsync(EditingContact.Id, updateDto);
+
+                IsModalVisible = false;
+                await LoadContactsAsync();
+            }
+            catch (Exception ex)
+            {
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    if (Application.Current?.MainPage != null)
+                        await Application.Current.MainPage.DisplayAlert("Ошибка", $"Не удалось сохранить: {ex.Message}", "OK");
+                });
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]
@@ -96,6 +123,22 @@ namespace MauiApp4.ViewModel
             IsModalVisible = false;
             EditingContact = null;
         }
+        #endregion
 
+        #region Логика (Methods)
+        private void OpenEditModal(ContactDto contactToEdit)
+        {
+            EditingContact = new ContactDto
+            {
+                Id = contactToEdit.Id,
+                FirstName = contactToEdit.FirstName,
+                LastName = contactToEdit.LastName,
+                Phone = contactToEdit.Phone,
+                Email = contactToEdit.Email,
+                Address = contactToEdit.Address
+            };
+            IsModalVisible = true;
+        }
+        #endregion
     }
 }
