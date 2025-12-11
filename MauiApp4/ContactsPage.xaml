@@ -3,102 +3,185 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MauiApp4.ContactsPage"
              xmlns:vm="clr-namespace:MauiApp4.ViewModel"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             >
-
-    <ContentPage.BindingContext>
-        <vm:ContactsViewModel/>
-    </ContentPage.BindingContext>
-
-    <ContentPage.Resources>
-        <ResourceDictionary>
-     
-        </ResourceDictionary>
-    </ContentPage.Resources>
-
+             Title="Контакты"
+             BackgroundColor="#F5F5F5">
     <Grid>
 
         <ScrollView>
-            <VerticalStackLayout Margin="{StaticResource MarginL}">
+            <VerticalStackLayout Margin="15, 20">
 
-                <Label Text="СПИСОК КОНТАКТОВ" FontFamily="Vokiar"
-                   HorizontalOptions="Center"
-                   FontSize="Header"/>
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10" Margin="0,0,0,20">
+                    <SearchBar Grid.Column="0" 
+                             Text="{Binding SearchText}"
+                             SearchCommand="{Binding SearchContactCommand}"
+                             Placeholder="Поиск контактов..."/>
+
+                    <Button Grid.Column="1"
+                            Text="Обновить"
+                            Command="{Binding RefreshContactsCommand}"
+                            BackgroundColor="#007ACC"
+                            TextColor="White"
+                            CornerRadius="8"
+                            WidthRequest="100"/>
+
+                    <Button Grid.Column="2"
+                            Text="+"
+                            Command="{Binding AddContactCommand}"
+                            BackgroundColor="#007ACC"
+                            TextColor="White"
+                            CornerRadius="8"
+                            WidthRequest="50"
+                            FontSize="20"/>
+                </Grid>
+
+                <Label Text="СПИСОК КОНТАКТОВ" 
+                       HorizontalOptions="Center"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="#333333"
+                       Margin="0,0,0,10"/>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                                 IsVisible="{Binding IsBusy}"
+                                 HorizontalOptions="Center"
+                                 Color="#007ACC"
+                                 HeightRequest="50"
+                                 WidthRequest="50"/>
 
                 <CollectionView ItemsSource="{Binding Contacts}"
-                            ItemTemplate="{StaticResource ContactItem}"
-                            EmptyView="{StaticResource EmptyContact}"
-                            SelectedItem="{Binding SelectedContact}"
-                            
-                            >
+                                SelectedItem="{Binding SelectedContact}"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="10" Margin="0, 5" CornerRadius="8" BackgroundColor="White" HasShadow="True">
+                                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto"
+                                      RowSpacing="5">
 
+                                    <Label Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                           Text="🙍🏻‍♂️"
+                                           FontSize="30"
+                                           VerticalOptions="Start"
+                                           Margin="0,0,15,0"/>
+
+                                    <Label Grid.Column="1" Grid.Row="0"
+                                           Text="{Binding FullName}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="#333333"/>
+
+                                    <Label Grid.Column="1" Grid.Row="1"
+                                           Text="{Binding Phone}"
+                                           FontSize="14"
+                                           TextColor="#007ACC"/>
+
+                                    <Label Grid.Column="1" Grid.Row="2"
+                                           Text="{Binding Email}"
+                                           FontSize="12"
+                                           TextColor="Gray"/>
+
+                                    <HorizontalStackLayout Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" Spacing="5" 
+                                                           VerticalOptions="Center" HorizontalOptions="End">
+
+                                        <Button Text="Редактировать"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ContactsViewModel}}, Path=EditContactCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#007ACC"
+                                                TextColor="White"
+                                                CornerRadius="5"
+                                                FontSize="12"
+                                                Padding="10, 5"/>
+
+                                        <Button Text="Удалить"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ContactsViewModel}}, Path=DeleteContactCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#DC3545"
+                                                TextColor="White"
+                                                CornerRadius="5"
+                                                FontSize="12"
+                                                Padding="10, 5"/>
+                                    </HorizontalStackLayout>
+
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                    <CollectionView.EmptyView>
+                        <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Padding="40" Margin="0, 50, 0, 0">
+                            <Label Text="Нет контактов"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Нажмите + чтобы добавить новый контакт"
+                                   FontSize="14"
+                                   HorizontalOptions="Center"
+                                   TextColor="Gray"/>
+                        </StackLayout>
+                    </CollectionView.EmptyView>
                 </CollectionView>
 
             </VerticalStackLayout>
-
-
         </ScrollView>
 
+        <Grid IsVisible="{Binding IsModalVisible}"
+              BackgroundColor="#99000000" HorizontalOptions="Fill"
+              VerticalOptions="Fill">
 
-        <!-- Модальное окно -->
-        <Border x:Name="ModalOverlay"
-        IsVisible="{Binding IsModalVisible}"
-        Background="{AppThemeBinding Light={StaticResource NPrimaryLight}, Dark={StaticResource NPrimaryDark}}"
-        HorizontalOptions="Fill"
-        VerticalOptions="Fill">
+            <Frame HorizontalOptions="Center" 
+                   VerticalOptions="Center"
+                   WidthRequest="350"
+                   Padding="20"
+                   CornerRadius="10"
+                   BackgroundColor="White">
 
-            <VerticalStackLayout HorizontalOptions="Center" 
-                         VerticalOptions="Center"
-                         WidthRequest="300">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="{Binding EditingContact.Id, StringFormat='{0:Редактировать контакт #0;Новый контакт}'}" 
+                           FontSize="18"
+                           HorizontalOptions="Center"
+                           FontAttributes="Bold"
+                           TextColor="#333333"/>
 
-                <Label Text="Редактировать контакт" 
-               FontSize="Large"
-               HorizontalOptions="Center"
-               FontAttributes="Bold"/>
+                    <VerticalStackLayout Spacing="10">
+                        <Entry Text="{Binding EditingContact.FirstName}"
+                               Placeholder="Имя *"
+                               PlaceholderColor="Gray"/>
 
-                <VerticalStackLayout>
-                    <Label Text="Имя:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.FirstName}"/>
+                        <Entry Text="{Binding EditingContact.LastName}"
+                               Placeholder="Фамилия *"
+                               PlaceholderColor="Gray"/>
+
+                        <Entry Text="{Binding EditingContact.Phone}"
+                               Placeholder="Телефон *"
+                               PlaceholderColor="Gray"
+                               Keyboard="Telephone"/>
+
+                        <Entry Text="{Binding EditingContact.Email}"
+                               Placeholder="Email *"
+                               PlaceholderColor="Gray"
+                               Keyboard="Email"/>
+
+                        <Entry Text="{Binding EditingContact.Address}"
+                               Placeholder="Адрес"
+                               PlaceholderColor="Gray"/>
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0" 
+                                Text="Отмена" 
+                                Command="{Binding CloseModalCommand}"
+                                BackgroundColor="#CCCCCC"
+                                TextColor="#333333"
+                                CornerRadius="8"/>
+
+                        <Button Grid.Column="1" 
+                                Text="Сохранить" 
+                                Command="{Binding SaveContactCommand}"
+                                BackgroundColor="#007ACC"
+                                TextColor="White"
+                                CornerRadius="8"/>
+                    </Grid>
                 </VerticalStackLayout>
-
-                <VerticalStackLayout>
-                    <Label Text="Имя:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.LastName}"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Телефон:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.Phone}"
-                    Keyboard="Telephone"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Email:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.Email}"
-                   Keyboard="Email"/>
-                </VerticalStackLayout>
-
-                <VerticalStackLayout Spacing="5">
-                    <Label Text="Email:" FontSize="Small"/>
-                    <Entry Text="{Binding EditingContact.Address}"/>
-                </VerticalStackLayout>
-
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                    <Button Grid.Column="0" 
-                    Text="Отмена" 
-                    Style="{StaticResource ButtonSimple}"
-                    Command="{Binding CloseModalCommand}"/>
-
-                    <Button Grid.Column="1" 
-                    Text="Сохранить" 
-                    Style="{StaticResource ButtonPrimary}"
-                    Command="{Binding SaveContactCommand}"/>
-                </Grid>
-
-            </VerticalStackLayout>
-
-        </Border>
+            </Frame>
+        </Grid>
     </Grid>
-
-
 </ContentPage>

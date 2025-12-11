@@ -1,9 +1,27 @@
-namespace MauiApp4;
+using MauiApp4.Services;
+using MauiApp4.ViewModel;
 
-public partial class ContactsPage : ContentPage
+namespace MauiApp4
 {
-	public ContactsPage()
-	{
-		InitializeComponent();
-	}
+    public partial class ContactsPage : ContentPage
+    {
+        public ContactsPage()
+        {
+            InitializeComponent();
+
+            try
+            {
+                //создаем сервис и ViewModel
+                var apiService = new ApiService();
+                var viewModel = new ContactsViewModel(apiService);
+
+                //устанавливаем BindingContext
+                BindingContext = viewModel;
+            }
+            catch (Exception ex)
+            {
+                DisplayAlert("Ошибка", $"Ошибка создания страницы: {ex.Message}", "OK");
+            }
+        }
+    }
 }
